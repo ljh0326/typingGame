@@ -95,10 +95,12 @@ public class TypingGameGui extends Frame {
 	// isPlaying을 true로 바꾸고 쓰레드를 시작한다.
 	public void start() {
 		isPlaying = true;
-
+		
+		//1. WordGenerator 쓰레드 가동
 		wg = new WordGenerator();
 		wg.start();
 
+		//2. WordDropper 쓰레드 동작
 		wm = new WordDropper();
 		wm.start();
 	}
@@ -259,23 +261,34 @@ public class TypingGameGui extends Frame {
 	class MyEventHandler extends WindowAdapter implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 
+			//텍스트필드에 있는 값을 공백없이 받아온다.
 			String input = tf.getText().trim();
+			//텍스트필드를 빈칸으로 만들어준다.
 			tf.setText("");
 
 			System.out.println(input);
 			
+			//게임중이 아니라면 종료
 			if (!isPlaying)
 				return;
 
+			//백터에 들어있는 모든 단어를 살핀다.
 			for (int i = 0; i < words.size(); i++) {
+				//i번째 항목을 받고
 				Word tmp = (Word) words.get(i);
 
+				//사용자가 입력한 단어와 i번째 단어가 같으면
 				if (input.equals(tmp.word)) {
+					//단어삭제
 					words.remove(i);
+					//점수 추가 단어길이 * 50
 					score += input.length() * 50;
+					//점수 label에 설정
 					lbScore.setText("Score:" + score);
+					//빕소리 나게
 					Toolkit.getDefaultToolkit().beep();
 					
+					//만약 바이러스라면 바이러스 쓰레드 동작
 					if(tmp.isVirus) {
 						vt = new VirusThread();
 						vt.start();
